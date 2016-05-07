@@ -8,8 +8,13 @@ Membre::Membre(){}
 Membre::Membre(const char* file, Transform t, Membre * p){
 
 	this->maillage = read_mesh(file);
-	this->transform = t;
 	this->pere = p;
+	if (this->pere !=  NULL){
+		this->transform = this->pere->getTransform() * t ;
+		p->addEnfant(this);
+	}
+	else
+		this->transform = t;
 }
 
 /**
@@ -50,6 +55,10 @@ Membre & Membre::operator=(const Membre & m){
  */
 Mesh & Membre::getMaillage(){
 	return this->maillage;
+}
+
+Transform & Membre::getTransform(){
+	return this->transform;
 }
 
 const Membre & Membre::getPere(){
@@ -102,4 +111,17 @@ bool Membre::aPourFils(const Membre * m){
 			return true;
 	}
 	return false;
+}
+
+void Membre::move(Transform t)
+{
+	this->transform = this->transform * t;
+	for(std::vector<Membre *>::iterator it = enfants.begin(); it != enfants.end(); it++){
+		(*it)->move(t);
+	}
+}
+
+void Membre::transformWithoutSpreading(Transform t)
+{
+	this->transform = this->transform * t;
 }

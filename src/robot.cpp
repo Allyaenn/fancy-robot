@@ -19,7 +19,31 @@ Mesh grid;
 
 /*Parties du corps du robot*/
 Membre * torse;
-Membre * boule_cou;
+
+Membre * cou; //boule
+Membre * tete;
+
+Membre * epaule_droite; //boule
+Membre * bras_droit;
+Membre * av_bras_droit;
+Membre * poignet_droit;
+Membre * main_droite;
+
+Membre * epaule_gauche; //boule
+Membre * bras_gauche;
+Membre * av_bras_gauche;
+Membre * poignet_gauche;
+Membre * main_gauche;
+
+Membre * boule_cuisse_droite;
+Membre * cuisse_droite;
+Membre * tibia_droit;
+Membre * pied_droit;
+
+Membre * boule_cuisse_gauche;
+Membre * cuisse_gauche;
+Membre * tibia_gauche;
+Membre * pied_gauche;
 
 // utilitaire. creation d'une grille / repere.
 Mesh make_grid( int size )
@@ -62,11 +86,36 @@ int init( )
     glLineWidth(2.5f);                  // epaisseur des lignes de la grille (pixels)
     
     //création du robot : 
-    //torse
    	torse = new Membre("data/membres/torse.obj", make_identity());
-    boule_cou = new Membre("data/membres/boule.obj", make_identity(), torse);
+   	
+    cou = new Membre("data/membres/boule.obj", make_translation(0.1, 3.28, 0), torse);
+    tete = new Membre("data/membres/tete.obj", make_identity(), cou);
     
-    
+    epaule_droite = new Membre("data/membres/boule.obj", make_translation(0.1, 2.66, 1), torse); 
+	bras_droit = new Membre("data/membres/bras.obj", make_identity(), epaule_droite);
+	av_bras_droit = new Membre("data/membres/avant_bras.obj", make_translation(0, 0, 1.25), bras_droit);
+	poignet_droit = new Membre("data/membres/poignet.obj", make_translation(0, 0, 1.25), av_bras_droit);
+	main_droite = new Membre("data/membres/main.obj", make_translation(0, 0, 0.16), poignet_droit);
+
+	epaule_gauche = new Membre("data/membres/boule.obj", make_translation(0.1, 2.66, -1), torse); 
+	bras_gauche = new Membre("data/membres/bras.obj", make_rotationY(180), epaule_gauche);
+	av_bras_gauche = new Membre("data/membres/avant_bras.obj", make_translation(0, 0, 1.25), bras_gauche);
+	poignet_gauche = new Membre("data/membres/poignet.obj", make_translation(0, 0, 1.25), av_bras_gauche);
+	main_gauche = new Membre("data/membres/main.obj", make_translation(0, 0, 0.16), poignet_gauche);
+
+	boule_cuisse_droite = new Membre("data/membres/boule.obj", make_translation(0, 0, -0.6), torse);
+	cuisse_droite = new Membre("data/membres/cuisse.obj", make_identity(), boule_cuisse_droite);
+	tibia_droit = new Membre("data/membres/tibia.obj", make_translation(0, -1.53, 0), cuisse_droite);
+	pied_droit = new Membre("data/membres/pied.obj", make_translation(0, -1.37, 0), tibia_droit);
+
+	boule_cuisse_gauche = new Membre("data/membres/boule.obj", make_translation(0, 0, 0.6), torse);
+	cuisse_gauche = new Membre("data/membres/cuisse.obj", make_identity(), boule_cuisse_gauche);
+	tibia_gauche = new Membre("data/membres/tibia.obj", make_translation(0, -1.53, 0), cuisse_gauche);
+	pied_gauche = new Membre("data/membres/pied.obj", make_translation(0, -1.37, 0), tibia_gauche);
+	
+	//appliquer une transformation sans repercussions sur les enfants
+    boule_cuisse_droite->transformWithoutSpreading(make_scale(1.5,1.5,1.5));
+    boule_cuisse_gauche->transformWithoutSpreading(make_scale(1.5,1.5,1.5));
     
     return 0;   // renvoyer 0 ras, pas d'erreur, sinon renvoyer -1
 }
@@ -95,8 +144,34 @@ int draw( )
         // deplace le point de rotation
         orbiter_translation(camera, (float) mx / (float) window_width(), (float) my / (float) window_height()); 
     
-    draw(grid,camera);    
-    draw(boule_cou->getMaillage(), camera);
+    draw(grid,camera);
+    //cou->move(make_rotationY(1));
+    draw(torse->getMaillage(),torse->getTransform(), camera); 
+       
+    draw(cou->getMaillage(),cou->getTransform(), camera);
+    draw(tete->getMaillage(),tete->getTransform(), camera);  
+    
+    draw(epaule_droite->getMaillage(),epaule_droite->getTransform(), camera);    
+    draw(bras_droit->getMaillage(),bras_droit->getTransform(), camera);
+    draw(av_bras_droit->getMaillage(),av_bras_droit->getTransform(), camera);  
+    draw(poignet_droit->getMaillage(),poignet_droit->getTransform(), camera);    
+    draw(main_droite->getMaillage(),main_droite->getTransform(), camera);
+    
+    draw(epaule_gauche->getMaillage(),epaule_gauche->getTransform(), camera);    
+    draw(bras_gauche->getMaillage(),bras_gauche->getTransform(), camera);
+    draw(av_bras_gauche->getMaillage(),av_bras_gauche->getTransform(), camera);  
+    draw(poignet_gauche->getMaillage(),poignet_gauche->getTransform(), camera);    
+    draw(main_gauche->getMaillage(),main_gauche->getTransform(), camera);
+    
+    draw(boule_cuisse_droite->getMaillage(),boule_cuisse_droite->getTransform(), camera);  
+    draw(cuisse_droite->getMaillage(),cuisse_droite->getTransform(), camera);    
+    draw(tibia_droit->getMaillage(),tibia_droit->getTransform(), camera);
+    draw(pied_droit->getMaillage(),pied_droit->getTransform(), camera);  
+    
+    draw(boule_cuisse_gauche->getMaillage(),boule_cuisse_gauche->getTransform(), camera);  
+    draw(cuisse_gauche->getMaillage(),cuisse_gauche->getTransform(), camera);    
+    draw(tibia_gauche->getMaillage(),tibia_gauche->getTransform(), camera);
+    draw(pied_gauche->getMaillage(),pied_gauche->getTransform(), camera); 
 
     return 1;   // on continue, renvoyer 0 pour sortir de l'application
 }

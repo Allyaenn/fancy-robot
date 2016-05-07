@@ -33,7 +33,7 @@ class Membre {
 		
 		Mesh & getMaillage();
 		
-		const Transform & getTransform();
+		Transform & getTransform();
 		
 		const Membre & getPere();
 		
@@ -48,6 +48,10 @@ class Membre {
 		bool addEnfant(Membre* m);
 		
 		bool aPourFils(const Membre * m);
+		
+		void move(Transform t);
+		
+		void transformWithoutSpreading(Transform t);
 		
 		~Membre();
 	

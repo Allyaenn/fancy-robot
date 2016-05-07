@@ -145,7 +145,7 @@ int draw( )
         orbiter_translation(camera, (float) mx / (float) window_width(), (float) my / (float) window_height()); 
     
     draw(grid,camera);
-    //cou->move(make_rotationY(1));
+    torse->move(make_rotationY(1));
     draw(torse->getMaillage(),torse->getTransform(), camera); 
        
     draw(cou->getMaillage(),cou->getTransform(), camera);

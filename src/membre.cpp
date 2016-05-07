@@ -115,7 +115,7 @@ bool Membre::aPourFils(const Membre * m){
 
 void Membre::move(Transform t)
 {
-	this->transform = this->transform * t;
+	this->transform = t * this->transform ;
 	for(std::vector<Membre *>::iterator it = enfants.begin(); it != enfants.end(); it++){
 		(*it)->move(t);
 	}

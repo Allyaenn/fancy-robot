@@ -145,7 +145,7 @@ int draw( )
         orbiter_translation(camera, (float) mx / (float) window_width(), (float) my / (float) window_height()); 
     
     draw(grid,camera);
-    torse->move(make_rotationY(1));
+    //torse->move(make_rotationY(1));
     draw(torse->getMaillage(),torse->getTransform(), camera); 
        
     draw(cou->getMaillage(),cou->getTransform(), camera);
@@ -172,6 +172,24 @@ int draw( )
     draw(cuisse_gauche->getMaillage(),cuisse_gauche->getTransform(), camera);    
     draw(tibia_gauche->getMaillage(),tibia_gauche->getTransform(), camera);
     draw(pied_gauche->getMaillage(),pied_gauche->getTransform(), camera); 
+
+
+	SDL_Event event;
+	SDL_PollEvent(&event);
+
+	switch(event.type){
+		case SDL_KEYUP:
+			switch(event.key.keysym.sym){
+				case SDLK_z :
+					torse->move(make_rotationZ(-10));
+					cuisse_droite->move(make_rotationZ(10));
+					cuisse_gauche->move(make_rotationZ(10));
+					break;
+			}
+			break;
+		case SDL_KEYDOWN:
+			break;
+	}
 
     return 1;   // on continue, renvoyer 0 pour sortir de l'application
 }

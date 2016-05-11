@@ -113,14 +113,21 @@ bool Membre::aPourFils(const Membre * m){
 	return false;
 }
 
+/**
+ * Applique une Transformation t au membre et ses enfants
+ */
 void Membre::move(Transform t)
 {
 	this->transform = t * this->transform ;
+	//N'Y A T IL PAS UN RISQUE SI LE VECTEUR D'ENFANT EST VIDE/NULL?
 	for(std::vector<Membre *>::iterator it = enfants.begin(); it != enfants.end(); it++){
 		(*it)->move(t);
 	}
 }
 
+/**
+ * Applique une transformation t au membre sans la propager a ses enfant
+ */
 void Membre::transformWithoutSpreading(Transform t)
 {
 	this->transform = this->transform * t;

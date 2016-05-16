@@ -119,7 +119,6 @@ bool Membre::aPourFils(const Membre * m){
 void Membre::move(Transform t)
 {
 	this->transform = t * this->transform ;
-	//N'Y A T IL PAS UN RISQUE SI LE VECTEUR D'ENFANT EST VIDE/NULL?
 	for(std::vector<Membre *>::iterator it = enfants.begin(); it != enfants.end(); it++){
 		(*it)->move(t);
 	}
@@ -131,4 +130,16 @@ void Membre::move(Transform t)
 void Membre::transformWithoutSpreading(Transform t)
 {
 	this->transform = this->transform * t;
+}
+
+/* affiche la matrice de transformation*/
+void Membre::afficherTransform(){
+
+	for(int i = 0; i< 4; i++){
+		for(int j = 0; j < 4; j++){
+			printf(" %f ", this->transform.m[i][j]);
+		}
+		printf("\n");
+	}
+	printf("\n");
 }

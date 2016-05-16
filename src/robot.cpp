@@ -10,11 +10,11 @@
 
 #include "wavefront.h"
 #include "draw.h"
-
 #include "membre.h"
 
 Orbiter camera;
-
+int pose;
+bool sens;
 Mesh grid;
 
 /*Parties du corps du robot*/
@@ -116,7 +116,8 @@ int init( )
 	//appliquer une transformation sans repercussions sur les enfants
     boule_cuisse_droite->transformWithoutSpreading(make_scale(1.5,1.5,1.5));
     boule_cuisse_gauche->transformWithoutSpreading(make_scale(1.5,1.5,1.5));
-    
+    pose = 0;
+	sens = true;
     return 0;   // renvoyer 0 ras, pas d'erreur, sinon renvoyer -1
 }
 
@@ -176,14 +177,36 @@ int draw( )
 
 	SDL_Event event;
 	SDL_PollEvent(&event);
+	Transform tboule = make_identity();
 
 	switch(event.type){
 		case SDL_KEYUP:
 			switch(event.key.keysym.sym){
 				case SDLK_z :
-					torse->move(make_rotationZ(-10));
-					cuisse_droite->move(make_rotationZ(10));
-					cuisse_gauche->move(make_rotationZ(10));
+					if(sens){
+						torse->move(make_rotationZ(-10));
+						cuisse_droite->move(make_rotationZ(10));
+						cuisse_gauche->move(make_rotationZ(10));
+						printf("%i\n", pose);
+						pose++;
+					}else{
+						torse->move(make_rotationZ(10));
+						cuisse_droite->move(make_rotationZ(-10));
+						cuisse_gauche->move(make_rotationZ(-10));
+						pose--;
+					}
+					if(pose == 9)
+						sens = false;
+					if(pose== 0)
+						sens = true;
+					break;
+				case SDLK_t :
+					bras_droit->move(make_rotationY(10));
+					bras_gauche->move(make_rotationY(10));
+					//bras_droit->afficherTransform();//Debug des matrices
+					break;
+				case SDL_q :
+					return 0;
 					break;
 			}
 			break;

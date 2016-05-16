@@ -10,6 +10,7 @@
 #include "wavefront.h"
 #include "draw.h"
 
+#include <iostream>
 #include <vector>
 #include <string>
 
@@ -52,7 +53,8 @@ class Membre {
 		void move(Transform t);
 		
 		void transformWithoutSpreading(Transform t);
-		
+	
+		void afficherTransform();
 		~Membre();
 	
 };

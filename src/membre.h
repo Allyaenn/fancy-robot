@@ -18,7 +18,8 @@ class Membre {
 	
 	private : 
 		Mesh maillage;
-		Transform transform;
+		Transform transform_att;
+		Transform t_cours;
 		Membre * pere;
 		std::vector<Membre*> enfants;
 
@@ -34,7 +35,7 @@ class Membre {
 		
 		Mesh & getMaillage();
 		
-		Transform & getTransform();
+		Transform getTransform();
 		
 		const Membre & getPere();
 		
@@ -51,10 +52,9 @@ class Membre {
 		bool aPourFils(const Membre * m);
 		
 		void move(Transform t);
-		
-		void transformWithoutSpreading(Transform t);
 	
 		void afficherTransform();
+		
 		~Membre();
 	
 };

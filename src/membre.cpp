@@ -9,12 +9,14 @@ Membre::Membre(const char* file, Transform t, Membre * p){
 
 	this->maillage = read_mesh(file);
 	this->pere = p;
-	if (this->pere !=  NULL){
-		this->transform = this->pere->getTransform() * t ;
+	if (this->pere !=  NULL){ //autre element que le torse
+		this->transform_att = t;
+		this->t_cours = make_identity();
 		p->addEnfant(this);
 	}
-	else
-		this->transform = t;
+	else // le torse
+		this->t_cours = t;
+		this->transform_att = t;
 }
 
 /**
@@ -24,7 +26,7 @@ Membre::Membre(const char* file, Transform t, Membre * p){
 Membre::Membre(const Membre & m){
 
 	this->maillage = m.maillage;
-	this->transform = m.transform;
+	//this->transform = m.transform;
 	this->pere = m.pere;
 	for(std::vector<Membre *>::const_iterator it = m.enfants.begin(); it != m.enfants.end(); it++){
 		this->addEnfant(new Membre(**it)); // on copie les enfants
@@ -39,7 +41,7 @@ Membre & Membre::operator=(const Membre & m){
 	if(this != &m){
 
 		this->maillage = m.maillage;
-		this->transform = m.transform;
+		//this->transform = m.transform;
 		this->pere = m.pere;
 		for(std::vector<Membre *>::const_iterator it = m.enfants.begin(); it != m.enfants.end(); it++){
 			this->addEnfant(new Membre(**it)); // on copie les enfants
@@ -57,8 +59,13 @@ Mesh & Membre::getMaillage(){
 	return this->maillage;
 }
 
-Transform & Membre::getTransform(){
-	return this->transform;
+Transform  Membre::getTransform(){
+	
+	if (pere == NULL)
+		return this->t_cours; // je suis le torse, je ne renvoie que ma propre transformation
+	else
+		return this->pere->getTransform() * this->transform_att *  t_cours;
+		//	   transformation du père	  * tr courante * décalage	
 }
 
 const Membre & Membre::getPere(){
@@ -78,7 +85,7 @@ void Membre::setMaillage(Mesh & m){
 	this->maillage = m;
 }
 void Membre::setTransform(Transform & t){
-	this->transform = t;
+	//this->transform = t;
 }
 void Membre::setPere(Membre* p){
 	this->pere = p;
@@ -114,22 +121,12 @@ bool Membre::aPourFils(const Membre * m){
 }
 
 /**
- * Applique une Transformation t au membre et ses enfants
+ * Applique une Transformation t au membre
  */
 void Membre::move(Transform t)
 {
-	this->transform = t * this->transform ;
-	for(std::vector<Membre *>::iterator it = enfants.begin(); it != enfants.end(); it++){
-		(*it)->move(t);
-	}
-}
-
-/**
- * Applique une transformation t au membre sans la propager a ses enfant
- */
-void Membre::transformWithoutSpreading(Transform t)
-{
-	this->transform = this->transform * t;
+	this->t_cours = t_cours * t; // sauvegarde de la transformation courante (pour les enfants)
+	//this->transform = this->transform * t;
 }
 
 /* affiche la matrice de transformation*/
@@ -137,7 +134,7 @@ void Membre::afficherTransform(){
 
 	for(int i = 0; i< 4; i++){
 		for(int j = 0; j < 4; j++){
-			printf(" %f ", this->transform.m[i][j]);
+			//printf(" %f ", this->transform.m[i][j]);
 		}
 		printf("\n");
 	}

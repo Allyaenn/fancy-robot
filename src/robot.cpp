@@ -92,7 +92,7 @@ int init( )
     tete = new Membre("data/membres/tete.obj", make_identity(), cou);
     
     epaule_droite = new Membre("data/membres/boule.obj", make_translation(0.1, 2.66, 1), torse); 
-	bras_droit = new Membre("data/membres/bras.obj", make_identity(), epaule_droite);
+	bras_droit = new Membre("data/membres/bras.obj", make_identity(),epaule_droite);
 	av_bras_droit = new Membre("data/membres/avant_bras.obj", make_translation(0, 0, 1.25), bras_droit);
 	poignet_droit = new Membre("data/membres/poignet.obj", make_translation(0, 0, 1.25), av_bras_droit);
 	main_droite = new Membre("data/membres/main.obj", make_translation(0, 0, 0.16), poignet_droit);
@@ -103,19 +103,24 @@ int init( )
 	poignet_gauche = new Membre("data/membres/poignet.obj", make_translation(0, 0, 1.25), av_bras_gauche);
 	main_gauche = new Membre("data/membres/main.obj", make_translation(0, 0, 0.16), poignet_gauche);
 
-	boule_cuisse_droite = new Membre("data/membres/boule.obj", make_translation(0, 0, -0.6), torse);
-	cuisse_droite = new Membre("data/membres/cuisse.obj", make_identity(), boule_cuisse_droite);
+	boule_cuisse_droite = new Membre("data/membres/boule.obj", make_translation(0, 0, -0.6) * make_scale(1.5,1.5,1.5), torse);
+	cuisse_droite = new Membre("data/membres/cuisse.obj", make_identity()* make_scale(2.0/3.0,2.0/3.0,2.0/3.0), boule_cuisse_droite);
 	tibia_droit = new Membre("data/membres/tibia.obj", make_translation(0, -1.53, 0), cuisse_droite);
 	pied_droit = new Membre("data/membres/pied.obj", make_translation(0, -1.37, 0), tibia_droit);
 
-	boule_cuisse_gauche = new Membre("data/membres/boule.obj", make_translation(0, 0, 0.6), torse);
-	cuisse_gauche = new Membre("data/membres/cuisse.obj", make_identity(), boule_cuisse_gauche);
+	boule_cuisse_gauche = new Membre("data/membres/boule.obj", make_translation(0, 0, 0.6)* make_scale(1.5,1.5,1.5), torse);
+	cuisse_gauche = new Membre("data/membres/cuisse.obj", make_identity()* make_scale(2.0/3.0,2.0/3.0,2.0/3.0), boule_cuisse_gauche);
 	tibia_gauche = new Membre("data/membres/tibia.obj", make_translation(0, -1.53, 0), cuisse_gauche);
 	pied_gauche = new Membre("data/membres/pied.obj", make_translation(0, -1.37, 0), tibia_gauche);
 	
 	//appliquer une transformation sans repercussions sur les enfants
-    boule_cuisse_droite->transformWithoutSpreading(make_scale(1.5,1.5,1.5));
-    boule_cuisse_gauche->transformWithoutSpreading(make_scale(1.5,1.5,1.5));
+   // boule_cuisse_droite->move(make_scale(1.5,1.5,1.5), false);
+    //boule_cuisse_gauche->move(make_scale(1.5,1.5,1.5), false);
+//    cuisse_droite->move(make_scale(0.66,0.66,0.66), false);
+    //boule_cuisse_gauche->transformWithoutSpreading(make_scale(1.5,1.5,1.5));
+
+	//tete->move(make_scale(2,2,2));	
+	
     pose = 0;
 	sens = true;
     return 0;   // renvoyer 0 ras, pas d'erreur, sinon renvoyer -1
@@ -179,6 +184,14 @@ int draw( )
 	SDL_PollEvent(&event);
 	Transform tboule = make_identity();
 
+//	av_bras_droit->move(make_rotationX(1), false);	
+//	bras_droit->move(make_rotationZ(1), false);
+	
+	//boule_cuisse_droite->move(make_rotationZ(1));
+	
+//	torse->move(make_rotationZ(-0.2), false);
+//	cuisse_droite->move(make_rotationZ(1), false);
+	
 	switch(event.type){
 		case SDL_KEYUP:
 			switch(event.key.keysym.sym){
@@ -201,11 +214,11 @@ int draw( )
 						sens = true;
 					break;
 				case SDLK_t :
-					bras_droit->move(make_rotationY(10));
-					bras_gauche->move(make_rotationY(10));
+					bras_droit->move(make_rotationX(10));
+					bras_gauche->move(make_rotationX(10));
 					//bras_droit->afficherTransform();//Debug des matrices
 					break;
-				case SDL_q :
+				case SDLK_q :
 					return 0;
 					break;
 			}
@@ -213,6 +226,55 @@ int draw( )
 		case SDL_KEYDOWN:
 			break;
 	}
+	
+	//mieux pour les mouvements avec le clavier
+	if (key_state('b'))
+	{
+		bras_droit->move(make_rotationX(1));
+	}
+	
+	if (key_state('p'))
+	{
+		if(sens){
+			torse->move(make_rotationX(-1));
+			//cuisse_droite->move(make_rotationX(1), false);
+			//cuisse_gauche->move(make_rotationX(1), false);
+			printf("%i\n", pose);
+			pose++;
+		}else{
+			torse->move(make_rotationX(1));
+			//cuisse_droite->move(make_rotationX(-1), false);
+			//cuisse_gauche->move(make_rotationX(-1), false);
+			pose--;
+		}
+	}
+	
+	if (key_state('m'))
+	{
+		epaule_gauche->move(make_rotationY(5));
+		epaule_droite->move(make_rotationY(5));
+		
+	}
+	
+	if (key_state('l'))
+	{
+		epaule_gauche->move(make_rotationY(1));
+	}
+	
+	if (key_state('k'))
+	{
+		epaule_gauche->move(make_rotationZ(1));
+	}
+	
+	if (key_state('o'))
+	{
+		torse->move(make_translation(0.1,0.1,0.1));
+	}
+	
+	
+	
+	if (key_state('c'))
+		poignet_gauche->move(make_rotationZ(1));
 
     return 1;   // on continue, renvoyer 0 pour sortir de l'application
 }

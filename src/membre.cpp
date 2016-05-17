@@ -10,13 +10,12 @@ Membre::Membre(const char* file, Transform t, Membre * p){
 	this->maillage = read_mesh(file);
 	this->pere = p;
 	if (this->pere !=  NULL){ //autre element que le torse
-		this->transform_att = t;
-		this->t_cours = make_identity();
-		p->addEnfant(this);
+		this->t_offset = t;
+		this->t_courante = make_identity();
 	}
 	else // le torse
-		this->t_cours = t;
-		this->transform_att = t;
+		this->t_courante = t;
+		this->t_offset = t;
 }
 
 /**
@@ -28,9 +27,6 @@ Membre::Membre(const Membre & m){
 	this->maillage = m.maillage;
 	//this->transform = m.transform;
 	this->pere = m.pere;
-	for(std::vector<Membre *>::const_iterator it = m.enfants.begin(); it != m.enfants.end(); it++){
-		this->addEnfant(new Membre(**it)); // on copie les enfants
-	}
 }
 
 
@@ -43,9 +39,6 @@ Membre & Membre::operator=(const Membre & m){
 		this->maillage = m.maillage;
 		//this->transform = m.transform;
 		this->pere = m.pere;
-		for(std::vector<Membre *>::const_iterator it = m.enfants.begin(); it != m.enfants.end(); it++){
-			this->addEnfant(new Membre(**it)); // on copie les enfants
-		}
 	}
 	return *this;
 }
@@ -62,18 +55,14 @@ Mesh & Membre::getMaillage(){
 Transform  Membre::getTransform(){
 	
 	if (pere == NULL)
-		return this->t_cours; // je suis le torse, je ne renvoie que ma propre transformation
+		return this->t_courante; // je suis le torse, je ne renvoie que ma propre transformation
 	else
-		return this->pere->getTransform() * this->transform_att *  t_cours;
+		return this->pere->getTransform() * this->t_offset *  t_courante;
 		//	   transformation du père	  * tr courante * décalage	
 }
 
 const Membre & Membre::getPere(){
 	return *(this->pere);
-}
-
-const std::vector<Membre*> & Membre::getEnfants(){
-	return this->enfants;
 }
 
 /**
@@ -89,35 +78,6 @@ void Membre::setTransform(Transform & t){
 }
 void Membre::setPere(Membre* p){
 	this->pere = p;
-	p->addEnfant(this);
-}
-
-/**
- * Fonction d'ajout d'enfant
- * Renvoi vrai si déjà présent
- * faux si il faut l'ajouter
- */
-bool Membre::addEnfant(Membre* m){
-	
-	if(this->aPourFils(m))
-		return true;
-	else {
-		this->enfants.push_back(m);
-		return false;
-	}
-}
-
-/**
- * Fonction de vérification de la présence d'un enfant
- * renvoi vrai si m est un enfant de this
- */
-bool Membre::aPourFils(const Membre * m){
-	
-	for(std::vector<Membre *>::iterator it = enfants.begin(); it != enfants.end(); it++){
-		if(*it == m)
-			return true;
-	}
-	return false;
 }
 
 /**
@@ -125,8 +85,13 @@ bool Membre::aPourFils(const Membre * m){
  */
 void Membre::move(Transform t)
 {
-	this->t_cours = t_cours * t; // sauvegarde de la transformation courante (pour les enfants)
+	this->t_courante = t_courante * t; // sauvegarde de la transformation courante (pour les enfants)
 	//this->transform = this->transform * t;
+}
+
+void Membre::reset()
+{
+	this->t_courante = make_identity();
 }
 
 /* affiche la matrice de transformation*/

@@ -18,16 +18,17 @@ class Membre {
 	
 	private : 
 		Mesh maillage;
-		Transform transform_att;
-		Transform t_cours;
+		Transform t_offset;
+		Transform t_courante;
 		Membre * pere;
-		std::vector<Membre*> enfants;
 
 	public : 
 	
 		Membre();
 		
 		Membre(const char* file, Transform t, Membre * m = NULL);
+		
+		//Membre(Transform t, Membre * m = NULL);
 		
 		Membre(const Membre & m);
 		
@@ -38,8 +39,6 @@ class Membre {
 		Transform getTransform();
 		
 		const Membre & getPere();
-		
-		const std::vector<Membre*> & getEnfants();
 	
 		void setMaillage(Mesh & m);
 		
@@ -47,11 +46,9 @@ class Membre {
 		
 		void setPere(Membre * p);
 		
-		bool addEnfant(Membre* m);
-		
-		bool aPourFils(const Membre * m);
-		
 		void move(Transform t);
+		
+		void reset();
 	
 		void afficherTransform();
 		

@@ -18,6 +18,7 @@ bool sens;
 Mesh grid;
 
 /*Parties du corps du robot*/
+Membre * corps;
 Membre * torse;
 
 Membre * cou; //boule
@@ -86,7 +87,10 @@ int init( )
     glLineWidth(2.5f);                  // epaisseur des lignes de la grille (pixels)
     
     //création du robot : 
-   	torse = new Membre("data/membres/torse.obj", make_identity());
+    
+    corps = new Membre(NULL, make_identity());
+    
+   	torse = new Membre("data/membres/torse.obj", make_identity(), corps);
    	
     cou = new Membre("data/membres/boule.obj", make_translation(0.1, 3.28, 0), torse);
     tete = new Membre("data/membres/tete.obj", make_identity(), cou);
@@ -103,27 +107,59 @@ int init( )
 	poignet_gauche = new Membre("data/membres/poignet.obj", make_translation(0, 0, 1.25), av_bras_gauche);
 	main_gauche = new Membre("data/membres/main.obj", make_translation(0, 0, 0.16), poignet_gauche);
 
-	boule_cuisse_droite = new Membre("data/membres/boule.obj", make_translation(0, 0, -0.6) * make_scale(1.5,1.5,1.5), torse);
+	boule_cuisse_droite = new Membre("data/membres/boule.obj", make_translation(0, 0, -0.6) * make_scale(1.5,1.5,1.5), corps);
 	cuisse_droite = new Membre("data/membres/cuisse.obj", make_identity()* make_scale(2.0/3.0,2.0/3.0,2.0/3.0), boule_cuisse_droite);
 	tibia_droit = new Membre("data/membres/tibia.obj", make_translation(0, -1.53, 0), cuisse_droite);
 	pied_droit = new Membre("data/membres/pied.obj", make_translation(0, -1.37, 0), tibia_droit);
 
-	boule_cuisse_gauche = new Membre("data/membres/boule.obj", make_translation(0, 0, 0.6)* make_scale(1.5,1.5,1.5), torse);
+	boule_cuisse_gauche = new Membre("data/membres/boule.obj", make_translation(0, 0, 0.6)* make_scale(1.5,1.5,1.5), corps);
 	cuisse_gauche = new Membre("data/membres/cuisse.obj", make_identity()* make_scale(2.0/3.0,2.0/3.0,2.0/3.0), boule_cuisse_gauche);
 	tibia_gauche = new Membre("data/membres/tibia.obj", make_translation(0, -1.53, 0), cuisse_gauche);
 	pied_gauche = new Membre("data/membres/pied.obj", make_translation(0, -1.37, 0), tibia_gauche);
-	
-	//appliquer une transformation sans repercussions sur les enfants
-   // boule_cuisse_droite->move(make_scale(1.5,1.5,1.5), false);
-    //boule_cuisse_gauche->move(make_scale(1.5,1.5,1.5), false);
-//    cuisse_droite->move(make_scale(0.66,0.66,0.66), false);
-    //boule_cuisse_gauche->transformWithoutSpreading(make_scale(1.5,1.5,1.5));
-
-	//tete->move(make_scale(2,2,2));	
-	
-    pose = 0;
-	sens = true;
+		
     return 0;   // renvoyer 0 ras, pas d'erreur, sinon renvoyer -1
+}
+
+void reset()
+{
+	corps->reset();
+	torse->reset();
+
+	cou->reset(); 
+	tete->reset();
+
+	epaule_droite->reset(); 
+	bras_droit->reset();
+	av_bras_droit->reset();
+	poignet_droit->reset();
+	main_droite->reset();
+
+	epaule_gauche->reset();
+	bras_gauche->reset();
+	av_bras_gauche->reset();
+	poignet_gauche->reset();
+	main_gauche->reset();
+
+	boule_cuisse_droite->reset();
+	cuisse_droite->reset();
+	tibia_droit->reset();
+	pied_droit->reset();
+
+	boule_cuisse_gauche->reset();
+	cuisse_gauche->reset();
+	tibia_gauche->reset();
+	pied_gauche->reset();
+
+}
+
+void pose1_jump()
+{
+	reset();
+	epaule_droite->move(make_rotationX(-60));
+	epaule_gauche->move(make_rotationX(60));
+	
+	tibia_droit->move(make_rotationZ(-105));
+	tibia_gauche->move(make_rotationZ(-105));
 }
 
 // affichage
@@ -178,108 +214,21 @@ int draw( )
     draw(cuisse_gauche->getMaillage(),cuisse_gauche->getTransform(), camera);    
     draw(tibia_gauche->getMaillage(),tibia_gauche->getTransform(), camera);
     draw(pied_gauche->getMaillage(),pied_gauche->getTransform(), camera); 
-
-
-	SDL_Event event;
-	SDL_PollEvent(&event);
-	Transform tboule = make_identity();
-
-//	av_bras_droit->move(make_rotationX(1), false);	
-//	bras_droit->move(make_rotationZ(1), false);
-	
-	//boule_cuisse_droite->move(make_rotationZ(1));
-	
-//	torse->move(make_rotationZ(-0.2), false);
-//	cuisse_droite->move(make_rotationZ(1), false);
-	
-	switch(event.type){
-		case SDL_KEYUP:
-			switch(event.key.keysym.sym){
-				case SDLK_z :
-					if(sens){
-						torse->move(make_rotationZ(-10));
-						cuisse_droite->move(make_rotationZ(10));
-						cuisse_gauche->move(make_rotationZ(10));
-						printf("%i\n", pose);
-						pose++;
-					}else{
-						torse->move(make_rotationZ(10));
-						cuisse_droite->move(make_rotationZ(-10));
-						cuisse_gauche->move(make_rotationZ(-10));
-						pose--;
-					}
-					if(pose == 9)
-						sens = false;
-					if(pose== 0)
-						sens = true;
-					break;
-				case SDLK_t :
-					bras_droit->move(make_rotationX(10));
-					bras_gauche->move(make_rotationX(10));
-					//bras_droit->afficherTransform();//Debug des matrices
-					break;
-				case SDLK_q :
-					return 0;
-					break;
-			}
-			break;
-		case SDL_KEYDOWN:
-			break;
-	}
 	
 	//mieux pour les mouvements avec le clavier
-	if (key_state('b'))
-	{
-		bras_droit->move(make_rotationX(1));
-	}
 	
 	if (key_state('p'))
 	{
-		if(sens){
-			torse->move(make_rotationX(-1));
-			//cuisse_droite->move(make_rotationX(1), false);
-			//cuisse_gauche->move(make_rotationX(1), false);
-			printf("%i\n", pose);
-			pose++;
-		}else{
-			torse->move(make_rotationX(1));
-			//cuisse_droite->move(make_rotationX(-1), false);
-			//cuisse_gauche->move(make_rotationX(-1), false);
-			pose--;
-		}
+		pose1();
 	}
 	
-	if (key_state('m'))
+	if (key_state('r'))
 	{
-		epaule_gauche->move(make_rotationY(5));
-		epaule_droite->move(make_rotationY(5));
-		
+		reset();
 	}
-	
-	if (key_state('l'))
-	{
-		epaule_gauche->move(make_rotationY(1));
-	}
-	
-	if (key_state('k'))
-	{
-		epaule_gauche->move(make_rotationZ(1));
-	}
-	
-	if (key_state('o'))
-	{
-		torse->move(make_translation(0.1,0.1,0.1));
-	}
-	
-	
-	
-	if (key_state('c'))
-		poignet_gauche->move(make_rotationZ(1));
 
     return 1;   // on continue, renvoyer 0 pour sortir de l'application
 }
-
-//la matrice la plus a droite est la première appliquée, ici on veut que le cube tourne d'abors puis ensuite on le déplace
 
 // destruction des objets openGL
 int quit( )

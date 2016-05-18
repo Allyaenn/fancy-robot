@@ -277,15 +277,15 @@ int draw( )
 	if(key_state('s')) // fait tourner l'épaule gauche sur Y dans le sens anti horaire
 		membres[m::epaule_gauche]->move(make_rotationY(1));
 		
-	if(key_state('d')) // fait tourner l'avant bras gauche sur X dans le sens horaire
-		membres[m::av_bras_gauche]->move(make_rotationX(1));
-	if(key_state('f')) // fait tourner l'avant bras gauche sur X dans le sens anti-horaire
-		membres[m::av_bras_gauche]->move(make_rotationX(-1));
+	if(key_state('d')) // fait tourner l'avant bras gauche sur Y dans le sens anti-horaire
+		membres[m::av_bras_gauche]->move(make_rotationY(1));
+	if(key_state('f')) // fait tourner l'avant bras gauche sur Y dans le sens horaire
+		membres[m::av_bras_gauche]->move(make_rotationY(-1));
 		
-	if(key_state('g')) // fait tourner le poignet gauche sur Z dans le sens anti-horaire
-		membres[m::poignet_gauche]->move(make_rotationZ(1));
-	if(key_state('h')) // fait tourner le poignet gauche sur Z dans le sens horaire
-		membres[m::poignet_gauche]->move(make_rotationZ(-1));
+	if(key_state('g')) // fait tourner le poignet gauche sur X dans le sens horaire
+		membres[m::poignet_gauche]->move(make_rotationX(1));
+	if(key_state('h')) // fait tourner le poignet gauche sur X dans le sens anti-horaire
+		membres[m::poignet_gauche]->move(make_rotationX(-1));
 		
 	if(key_state('w')) // fait tourner la jambe droite sur Z dans le sens anti-horaire
 		membres[m::boule_cuisse_droite]->move(make_rotationZ(1));

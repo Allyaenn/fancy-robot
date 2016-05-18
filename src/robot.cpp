@@ -17,6 +17,8 @@ int pose;
 bool sens;
 Mesh grid;
 
+
+
 /*Parties du corps du robot*/
 Membre * corps;
 Membre * torse;
@@ -88,7 +90,7 @@ int init( )
     
     //création du robot : 
     
-    corps = new Membre(NULL, make_identity());
+    corps = new Membre(NULL, make_translation(0,3.5,0));
     
    	torse = new Membre("data/membres/torse.obj", make_identity(), corps);
    	
@@ -120,7 +122,7 @@ int init( )
     return 0;   // renvoyer 0 ras, pas d'erreur, sinon renvoyer -1
 }
 
-void reset()
+void reset() //retour à la position de départ
 {
 	corps->reset();
 	torse->reset();
@@ -152,14 +154,54 @@ void reset()
 
 }
 
-void pose1_jump()
+void saut() //position du saut (bras en V, genoux pliés)
 {
 	reset();
+	
 	epaule_droite->move(make_rotationX(-60));
 	epaule_gauche->move(make_rotationX(60));
 	
 	tibia_droit->move(make_rotationZ(-105));
 	tibia_gauche->move(make_rotationZ(-105));
+}
+
+void guerrier() //position du guerrier (yoga)
+{
+	reset();
+	
+	cou->move(make_rotationY(90));
+	
+	boule_cuisse_droite->move(make_rotationY(90));
+	boule_cuisse_droite->move(make_rotationZ(90));
+	tibia_droit->move(make_rotationZ(-90));
+		
+	boule_cuisse_gauche->move(make_rotationY(45));
+	boule_cuisse_gauche->move(make_rotationX(-55));
+	boule_cuisse_gauche->move(make_rotationZ(-45));
+	
+	pied_gauche->move(make_rotationX(65));
+	pied_gauche->move(make_rotationZ(20));
+	pied_gauche->move(make_rotationY(-5));	
+	
+	corps->move(make_translation(0,-1.5,0));
+	
+}
+
+void sur_une_main() // en équilibre sur une main, les jambes en V, l'une est pliée
+{
+	reset();
+	
+	epaule_gauche->move(make_rotationX(90));
+	
+	main_gauche->move(make_rotationX(-90));
+		
+	tibia_droit->move(make_rotationZ(-105));
+	
+	boule_cuisse_gauche->move(make_rotationX(-15));
+	boule_cuisse_droite->move(make_rotationX(15));
+	
+	corps->move(make_rotationX(180));
+	corps->move(make_translation(0,-2,0));
 }
 
 // affichage
@@ -215,17 +257,21 @@ int draw( )
     draw(tibia_gauche->getMaillage(),tibia_gauche->getTransform(), camera);
     draw(pied_gauche->getMaillage(),pied_gauche->getTransform(), camera); 
 	
-	//mieux pour les mouvements avec le clavier
-	
 	if (key_state('p'))
-	{
-		pose1();
-	}
+		saut();
+
+	if(key_state('o'))
+		guerrier();
+	
+	if(key_state('i'))
+		sur_une_main();
+
 	
 	if (key_state('r'))
-	{
 		reset();
-	}
+	
+	if (key_state('z')) // penche le buste sans faire bouger les jambes
+		torse->move(make_rotationZ(-1));
 
     return 1;   // on continue, renvoyer 0 pour sortir de l'application
 }
@@ -235,7 +281,6 @@ int quit( )
 {
     return 0;   // ras, pas d'erreur
 }
-
 
 int main( int argc, char **argv )
 {

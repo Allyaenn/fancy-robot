@@ -14,7 +14,7 @@ Membre::Membre(const char* file, Transform t, Membre * p){
 		this->t_courante = make_identity();
 	}
 	else // le torse
-		this->t_courante = t;
+		this->t_courante = make_identity();
 		this->t_offset = t;
 }
 
@@ -55,7 +55,7 @@ Mesh & Membre::getMaillage(){
 Transform  Membre::getTransform(){
 	
 	if (pere == NULL)
-		return this->t_courante; // je suis le torse, je ne renvoie que ma propre transformation
+		return this->t_offset *  t_courante; // je suis le torse, je ne renvoie que ma propre transformation
 	else
 		return this->pere->getTransform() * this->t_offset *  t_courante;
 		//	   transformation du père	  * tr courante * décalage	

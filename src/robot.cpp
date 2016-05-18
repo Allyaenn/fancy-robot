@@ -269,9 +269,48 @@ int draw( )
 	
 	if (key_state('z')) // penche le buste sans faire bouger les jambes
 		membres[m::torse]->move(make_rotationZ(-0.2));
-		
 	if (key_state('e')) // remonte le buste sans faire bouger les jambes
 		membres[m::torse]->move(make_rotationZ(0.2));
+		
+	if(key_state('q')) // fait tourner l'épaule gauche sur Y dans le sens horaire
+		membres[m::epaule_gauche]->move(make_rotationY(-1));
+	if(key_state('s')) // fait tourner l'épaule gauche sur Y dans le sens anti horaire
+		membres[m::epaule_gauche]->move(make_rotationY(1));
+		
+	if(key_state('d')) // fait tourner l'avant bras gauche sur X dans le sens horaire
+		membres[m::av_bras_gauche]->move(make_rotationX(1));
+	if(key_state('f')) // fait tourner l'avant bras gauche sur X dans le sens anti-horaire
+		membres[m::av_bras_gauche]->move(make_rotationX(-1));
+		
+	if(key_state('g')) // fait tourner le poignet gauche sur Z dans le sens anti-horaire
+		membres[m::poignet_gauche]->move(make_rotationZ(1));
+	if(key_state('h')) // fait tourner le poignet gauche sur Z dans le sens horaire
+		membres[m::poignet_gauche]->move(make_rotationZ(-1));
+		
+	if(key_state('w')) // fait tourner la jambe droite sur Z dans le sens anti-horaire
+		membres[m::boule_cuisse_droite]->move(make_rotationZ(1));
+	if(key_state('x')) // fait tourner la jambe droite sur Z dans le sens horaire
+		membres[m::boule_cuisse_droite]->move(make_rotationZ(-1));
+		
+	if(key_state('c')) // fait tourner le tibia droit sur Z dans le sens horaire
+		membres[m::tibia_droit]->move(make_rotationZ(-1));
+	if(key_state('v')) // fait tourner le tibia droit sur Z dans le sens anti-horaire
+		membres[m::tibia_droit]->move(make_rotationZ(1));
+		
+	if(key_state('b')) // fait tourner le pied droit sur Z dans le sens anti-horaire
+		membres[m::pied_droit]->move(make_rotationZ(1));
+	if(key_state('n')) // fait tourner le pied droit sur Z dans le sens horaire
+		membres[m::pied_droit]->move(make_rotationZ(-1));
+		
+	if(key_state('j')) // fait tourner le cou sur Y dans le sens anti-horaire
+		membres[m::cou]->move(make_rotationY(1));
+	if(key_state('k')) // fait tourner le cou sur Y dans le sens horaire
+		membres[m::cou]->move(make_rotationY(-1));
+		
+	if(key_state('l')) //fait tourner la tete sur Z dans le sens horaire
+		membres[m::tete]->move(make_rotationZ(-1));
+	if(key_state('m')) //fait tourner la tete sur Z dans le sens anti-horaire
+		membres[m::tete]->move(make_rotationZ(1));
 
     return 1;   // on continue, renvoyer 0 pour sortir de l'application
 }

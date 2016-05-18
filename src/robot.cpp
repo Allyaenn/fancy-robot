@@ -17,9 +17,10 @@ int pose;
 bool sens;
 Mesh grid;
 
-
+// tableau contenant tous les membres
 Membre * membres[22];
 
+// enum permettant de designer facilement les elements du robot
 enum m {	corps,
 		   	torse,
 			cou,
@@ -42,6 +43,9 @@ enum m {	corps,
 			cuisse_gauche,
 			tibia_gauche,
 			pied_gauche };
+			
+// indice permettant de se repérer dans l'animation
+int indice_anim  = 1001;
 
 // utilitaire. creation d'une grille / repere.
 Mesh make_grid( int size )
@@ -75,20 +79,22 @@ int init( )
     grid.color = make_black() ;
     
     // etat par defaut
-    glClearColor(0.2, 0.2, 0.2, 1);           // couleur par defaut de la fenetre
+    glClearColor(0.2, 0.2, 0.2, 1);        // couleur par defaut de la fenetre
     
-    glClearDepthf(1);                   // profondeur par defaut
+    glClearDepthf(1);                     // profondeur par defaut
     glDepthFunc(GL_LEQUAL);               // ztest, conserver l'intersection la plus proche de la camera
-    glEnable(GL_DEPTH_TEST);            // activer le ztest
+    glEnable(GL_DEPTH_TEST);              // activer le ztest
     
-    glLineWidth(2.5f);                  // epaisseur des lignes de la grille (pixels)
+    glLineWidth(2.5f);                    // epaisseur des lignes de la grille (pixels)
     
-    //création du robot : 
+    // création du robot : 
     
+    // corps
     membres[m::corps] = new Membre(NULL, make_translation(0,3.5,0));
     
+    // partie haute
    	membres[m::torse] = new Membre("data/membres/torse.obj", make_identity(), membres[m::corps]);
-   	
+   
     membres[m::cou] = new Membre("data/membres/boule.obj", make_translation(0.1, 3.28, 0), membres[m::torse]);
     membres[m::tete] = new Membre("data/membres/tete.obj", make_identity(), membres[m::cou]);
     
@@ -104,6 +110,7 @@ int init( )
 	membres[m::poignet_gauche] = new Membre("data/membres/poignet.obj", make_translation(0, 0, 1.25),  membres[m::av_bras_gauche]);
 	membres[m::main_gauche] = new Membre("data/membres/main.obj", make_translation(0, 0, 0.16),  membres[m::poignet_gauche]);
 	
+	// partie basse
 	membres[m::boule_cuisse_droite] = new Membre("data/membres/boule.obj", make_translation(0, 0, 0.6)* make_scale(1.5,1.5,1.5), membres[m::corps]);
 	membres[m::cuisse_droite] = new Membre("data/membres/cuisse.obj", make_identity()* make_scale(2.0/3.0,2.0/3.0,2.0/3.0),  membres[m::boule_cuisse_droite]);
 	membres[m::tibia_droit] = new Membre("data/membres/tibia.obj", make_translation(0, -1.53, 0),  membres[m::cuisse_droite]);
@@ -114,7 +121,6 @@ int init( )
 	membres[m::tibia_gauche] = new Membre("data/membres/tibia.obj", make_translation(0, -1.53, 0),  membres[m::cuisse_gauche]);
 	membres[m::pied_gauche] = new Membre("data/membres/pied.obj", make_translation(0, -1.37, 0),  membres[m::tibia_gauche]);
 
-
     return 0;   // renvoyer 0 ras, pas d'erreur, sinon renvoyer -1
 }
 
@@ -124,54 +130,89 @@ void reset() //retour à la position de départ
 	{
 		 membres[i]->reset(); 
 	}
+	indice_anim  = 1001; //stoppe l'animation si elle est en cours
 }
 
-void saut() //position du saut (bras en V, genoux pliés)
+void saut() //animation (aller et retour) du saut (bras en V, genoux pliés)
 {
-	reset();
+	if(indice_anim<500)
+	{
+		if (indice_anim<250) // "aller" de l'animation
+		{
+			if (indice_anim<100) 
+			membres[m::corps]->move(make_translation(0,0.005,0)); //translation vers le haut
+			if (indice_anim<150)
+			{
+				//mouvements des bras
+				membres[m::epaule_droite]->move(make_rotationX(-0.5));
+				membres[m::epaule_gauche]->move(make_rotationX(0.5));
+			}	
+			
+			//mouvements des jambes
+			membres[m::tibia_droit]->move(make_rotationZ(-0.5));
+			membres[m::tibia_gauche]->move(make_rotationZ(-0.5));
+		}
+		else // "retour"" de l'animation
+		{
+			if (indice_anim>400 && indice_anim<500)
+				membres[m::corps]->move(make_translation(0,-0.005,0)); //translation vers le bas
+			if (indice_anim<400)
+			{
+				//mouvements des bras
+				membres[m::epaule_droite]->move(make_rotationX(0.5));
+				membres[m::epaule_gauche]->move(make_rotationX(-0.5));
+			}	
+			//mouvements des jambes
+			membres[m::tibia_droit]->move(make_rotationZ(0.5));
+			membres[m::tibia_gauche]->move(make_rotationZ(0.5));
+		}
 	
-	membres[m::epaule_droite]->move(make_rotationX(-60));
-	membres[m::epaule_gauche]->move(make_rotationX(60));
-	
-	membres[m::tibia_droit]->move(make_rotationZ(-105));
-	membres[m::tibia_gauche]->move(make_rotationZ(-105));
+		indice_anim++;
+	}	
 }
 
 void guerrier() //position du guerrier (yoga)
 {
 	reset();
 	
+	//mouvement de la tête
 	membres[m::cou]->move(make_rotationY(90));
 	
-	membres[m::boule_cuisse_droite]->move(make_rotationY(90));
-	membres[m::boule_cuisse_droite]->move(make_rotationZ(90));
-	membres[m::tibia_droit]->move(make_rotationZ(-90));
+	//mouvements de la jambe gauche
+	membres[m::boule_cuisse_gauche]->move(make_rotationY(90));
+	membres[m::boule_cuisse_gauche]->move(make_rotationZ(90));
+	membres[m::tibia_gauche]->move(make_rotationZ(-90));
 		
-	membres[m::boule_cuisse_gauche]->move(make_rotationY(45));
-	membres[m::boule_cuisse_gauche]->move(make_rotationX(-55));
-	membres[m::boule_cuisse_gauche]->move(make_rotationZ(-45));
+	// mouvements de la jambe droite
+	membres[m::boule_cuisse_droite]->move(make_rotationY(45));
+	membres[m::boule_cuisse_droite]->move(make_rotationX(-55));
+	membres[m::boule_cuisse_droite]->move(make_rotationZ(-45));
 	
-	membres[m::pied_gauche]->move(make_rotationX(65));
-	membres[m::pied_gauche]->move(make_rotationZ(20));
-	membres[m::pied_gauche]->move(make_rotationY(-5));	
+	//mouvement du pied droit
+	membres[m::pied_droit]->move(make_rotationX(65));
+	membres[m::pied_droit]->move(make_rotationZ(20));
+	membres[m::pied_droit]->move(make_rotationY(-5));	
 	
-	membres[m::corps]->move(make_translation(0,-1.5,0));
-	
+	//translation vers le bas
+	membres[m::corps]->move(make_translation(0,-1.5,0));	
 }
 
 void sur_une_main() // en équilibre sur une main, les jambes en V, l'une est pliée
 {
 	reset();
 	
+	//mouvements du bras gauche
 	membres[m::epaule_gauche]->move(make_rotationX(90));
-	
 	membres[m::main_gauche]->move(make_rotationX(-90));
 		
-	membres[m::tibia_droit]->move(make_rotationZ(-105));
+	//mouvement de la jambe gauche
+	membres[m::tibia_gauche]->move(make_rotationZ(-105));
 	
-	membres[m::boule_cuisse_gauche]->move(make_rotationX(-15));
-	membres[m::boule_cuisse_droite]->move(make_rotationX(15));
+	//mouvement des jambes
+	membres[m::boule_cuisse_droite]->move(make_rotationX(-15));
+	membres[m::boule_cuisse_gauche]->move(make_rotationX(15));
 	
+	//deplaccement du corps
 	membres[m::corps]->move(make_rotationX(180));
 	membres[m::corps]->move(make_translation(0,-2,0));
 }
@@ -202,28 +243,34 @@ int draw( )
     
     draw(grid,camera);
     
-	for (int i = 0; i<22; i++)
+    //dessin de tous les membres (sauf le corps qui n'a pas de maillage associé)
+	for (int i = 1; i<22; i++)
 	{
 		 draw(membres[i]->getMaillage(),membres[i]->getTransform(), camera); 
 	}
 	
-	if (key_state('p'))
-		saut();
+	if (key_state('p')) // lance l'animation saut
+	{
+		reset();
+		indice_anim = 0;
+	}
+	
+	saut();
 
-	if(key_state('o'))
+	if(key_state('o')) // le robot prend la posture du guerrier
 		guerrier();
 	
-	if(key_state('i'))
+	if(key_state('i')) // le robot prend la position "sur une main"
 		sur_une_main();
 
 	
-	if (key_state('r'))
+	if (key_state('r')) // le robot revient à sa position de départ
 		reset();
 	
 	if (key_state('z')) // penche le buste sans faire bouger les jambes
 		membres[m::torse]->move(make_rotationZ(-0.2));
 		
-	if (key_state('e')) // penche le buste sans faire bouger les jambes
+	if (key_state('e')) // remonte le buste sans faire bouger les jambes
 		membres[m::torse]->move(make_rotationZ(0.2));
 
     return 1;   // on continue, renvoyer 0 pour sortir de l'application

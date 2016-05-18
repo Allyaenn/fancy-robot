@@ -5,15 +5,15 @@
  */
 Membre::Membre(const char* file, Transform t, Membre * p){
 
-	this->maillage = read_mesh(file);
-	this->pere = p;
-	if (this->pere !=  NULL){ //autre element que le torse
-		this->t_offset = t;
-		this->t_courante = make_identity();
+	maillage = read_mesh(file);
+	pere = p;
+	if (pere !=  NULL){ // autre element que le corps
+		t_offset = t;
+		t_courante = make_identity();
 	}
-	else // le torse
-		this->t_courante = make_identity();
-		this->t_offset = t;
+	else // le corps
+		t_courante = make_identity();
+		t_offset = t;
 }
 
 /**
@@ -22,16 +22,20 @@ Membre::Membre(const char* file, Transform t, Membre * p){
  * ***************************
  */
 Mesh & Membre::getMaillage(){
-	return this->maillage;
+	return maillage;
 }
 
 Transform  Membre::getTransform(){
 	
 	if (pere == NULL)
-		return this->t_offset *  t_courante; // je suis le torse, je ne renvoie que ma propre transformation
+		// le corps renvoie que sa propre transformation
+		// on applique d'abord le mouvement puis on place l'objet
+		return t_offset *  t_courante; 
 	else
-		return this->pere->getTransform() * this->t_offset *  t_courante;
-		//	   transformation du père	  * tr courante * décalage	
+		// les autres elements on besoin de la transformation de leur père
+		// on applique d'abord le mouvement puis on place l'objet par rapport à son père
+		// et enfin on applique la transformation du père
+		return pere->getTransform() * t_offset *  t_courante; 
 }
 
 /**
@@ -39,8 +43,8 @@ Transform  Membre::getTransform(){
  */
 void Membre::move(Transform t)
 {
-	this->t_courante = t_courante * t; // sauvegarde de la transformation courante (pour les enfants)
-	//this->transform = this->transform * t;
+	// sauvegarde de la transformation courante (pour les enfants)
+	t_courante = t_courante * t; 
 }
 
 /*
@@ -48,5 +52,5 @@ void Membre::move(Transform t)
  */
 void Membre::reset()
 {
-	this->t_courante = make_identity();
+	t_courante = make_identity();
 }

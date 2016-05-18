@@ -17,10 +17,14 @@
 class Membre {
 	
 	private : 
-		Mesh maillage;
-		Transform t_offset;
+		// le dessin de l'objet
+		Mesh maillage; 
+		// le décalage par rapport au membre père (ou à l'origine pour le corps)
+		Transform t_offset; 
+		// la transformation représentant les mouvements fait depuis le début (ou le dernier reset)
 		Transform t_courante;
-		Membre * pere;
+		// le père de l'objet
+		Membre * pere; 
 
 	public : 
 

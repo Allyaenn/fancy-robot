@@ -18,35 +18,30 @@ bool sens;
 Mesh grid;
 
 
+Membre * membres[22];
 
-/*Parties du corps du robot*/
-Membre * corps;
-Membre * torse;
-
-Membre * cou; //boule
-Membre * tete;
-
-Membre * epaule_droite; //boule
-Membre * bras_droit;
-Membre * av_bras_droit;
-Membre * poignet_droit;
-Membre * main_droite;
-
-Membre * epaule_gauche; //boule
-Membre * bras_gauche;
-Membre * av_bras_gauche;
-Membre * poignet_gauche;
-Membre * main_gauche;
-
-Membre * boule_cuisse_droite;
-Membre * cuisse_droite;
-Membre * tibia_droit;
-Membre * pied_droit;
-
-Membre * boule_cuisse_gauche;
-Membre * cuisse_gauche;
-Membre * tibia_gauche;
-Membre * pied_gauche;
+enum m {	corps,
+		   	torse,
+			cou,
+			tete,
+			epaule_droite, 
+			bras_droit,
+			av_bras_droit,
+			poignet_droit,
+			main_droite,
+			epaule_gauche, 
+			bras_gauche,
+			av_bras_gauche,
+			poignet_gauche,
+			main_gauche,
+			boule_cuisse_droite,
+			cuisse_droite,
+			tibia_droit,
+			pied_droit,
+			boule_cuisse_gauche,
+			cuisse_gauche,
+			tibia_gauche,
+			pied_gauche };
 
 // utilitaire. creation d'une grille / repere.
 Mesh make_grid( int size )
@@ -90,100 +85,77 @@ int init( )
     
     //création du robot : 
     
-    corps = new Membre(NULL, make_translation(0,3.5,0));
+    membres[m::corps] = new Membre(NULL, make_translation(0,3.5,0));
     
-   	torse = new Membre("data/membres/torse.obj", make_identity(), corps);
+   	membres[m::torse] = new Membre("data/membres/torse.obj", make_identity(), membres[m::corps]);
    	
-    cou = new Membre("data/membres/boule.obj", make_translation(0.1, 3.28, 0), torse);
-    tete = new Membre("data/membres/tete.obj", make_identity(), cou);
+    membres[m::cou] = new Membre("data/membres/boule.obj", make_translation(0.1, 3.28, 0), membres[m::torse]);
+    membres[m::tete] = new Membre("data/membres/tete.obj", make_identity(), membres[m::cou]);
     
-    epaule_droite = new Membre("data/membres/boule.obj", make_translation(0.1, 2.66, 1), torse); 
-	bras_droit = new Membre("data/membres/bras.obj", make_identity(),epaule_droite);
-	av_bras_droit = new Membre("data/membres/avant_bras.obj", make_translation(0, 0, 1.25), bras_droit);
-	poignet_droit = new Membre("data/membres/poignet.obj", make_translation(0, 0, 1.25), av_bras_droit);
-	main_droite = new Membre("data/membres/main.obj", make_translation(0, 0, 0.16), poignet_droit);
+    membres[m::epaule_droite] = new Membre("data/membres/boule.obj", make_translation(0.1, 2.66, 1), membres[m::torse]); 
+	membres[m::bras_droit] = new Membre("data/membres/bras.obj", make_identity(),  membres[m::epaule_droite]);
+	membres[m::av_bras_droit] = new Membre("data/membres/avant_bras.obj", make_translation(0, 0, 1.25),  membres[m::bras_droit]);
+	membres[m::poignet_droit] = new Membre("data/membres/poignet.obj", make_translation(0, 0, 1.25),  membres[m::av_bras_droit]);
+	membres[m::main_droite] = new Membre("data/membres/main.obj", make_translation(0, 0, 0.16),  membres[m::poignet_droit]);
 
-	epaule_gauche = new Membre("data/membres/boule.obj", make_translation(0.1, 2.66, -1), torse); 
-	bras_gauche = new Membre("data/membres/bras.obj", make_rotationY(180), epaule_gauche);
-	av_bras_gauche = new Membre("data/membres/avant_bras.obj", make_translation(0, 0, 1.25), bras_gauche);
-	poignet_gauche = new Membre("data/membres/poignet.obj", make_translation(0, 0, 1.25), av_bras_gauche);
-	main_gauche = new Membre("data/membres/main.obj", make_translation(0, 0, 0.16), poignet_gauche);
+	membres[m::epaule_gauche] = new Membre("data/membres/boule.obj", make_translation(0.1, 2.66, -1), membres[m::torse]); 
+	membres[m::bras_gauche] = new Membre("data/membres/bras.obj", make_rotationY(180),  membres[m::epaule_gauche]);
+	membres[m::av_bras_gauche] = new Membre("data/membres/avant_bras.obj", make_translation(0, 0, 1.25),  membres[m::bras_gauche]);
+	membres[m::poignet_gauche] = new Membre("data/membres/poignet.obj", make_translation(0, 0, 1.25),  membres[m::av_bras_gauche]);
+	membres[m::main_gauche] = new Membre("data/membres/main.obj", make_translation(0, 0, 0.16),  membres[m::poignet_gauche]);
+	
+	membres[m::boule_cuisse_droite] = new Membre("data/membres/boule.obj", make_translation(0, 0, 0.6)* make_scale(1.5,1.5,1.5), membres[m::corps]);
+	membres[m::cuisse_droite] = new Membre("data/membres/cuisse.obj", make_identity()* make_scale(2.0/3.0,2.0/3.0,2.0/3.0),  membres[m::boule_cuisse_droite]);
+	membres[m::tibia_droit] = new Membre("data/membres/tibia.obj", make_translation(0, -1.53, 0),  membres[m::cuisse_droite]);
+	membres[m::pied_droit] = new Membre("data/membres/pied.obj", make_translation(0, -1.37, 0),  membres[m::tibia_droit]);
 
-	boule_cuisse_droite = new Membre("data/membres/boule.obj", make_translation(0, 0, -0.6) * make_scale(1.5,1.5,1.5), corps);
-	cuisse_droite = new Membre("data/membres/cuisse.obj", make_identity()* make_scale(2.0/3.0,2.0/3.0,2.0/3.0), boule_cuisse_droite);
-	tibia_droit = new Membre("data/membres/tibia.obj", make_translation(0, -1.53, 0), cuisse_droite);
-	pied_droit = new Membre("data/membres/pied.obj", make_translation(0, -1.37, 0), tibia_droit);
+	membres[m::boule_cuisse_gauche] = new Membre("data/membres/boule.obj", make_translation(0, 0, -0.6) * make_scale(1.5,1.5,1.5), membres[m::corps]);
+	membres[m::cuisse_gauche] = new Membre("data/membres/cuisse.obj", make_identity()* make_scale(2.0/3.0,2.0/3.0,2.0/3.0),  membres[m::boule_cuisse_gauche]);
+	membres[m::tibia_gauche] = new Membre("data/membres/tibia.obj", make_translation(0, -1.53, 0),  membres[m::cuisse_gauche]);
+	membres[m::pied_gauche] = new Membre("data/membres/pied.obj", make_translation(0, -1.37, 0),  membres[m::tibia_gauche]);
 
-	boule_cuisse_gauche = new Membre("data/membres/boule.obj", make_translation(0, 0, 0.6)* make_scale(1.5,1.5,1.5), corps);
-	cuisse_gauche = new Membre("data/membres/cuisse.obj", make_identity()* make_scale(2.0/3.0,2.0/3.0,2.0/3.0), boule_cuisse_gauche);
-	tibia_gauche = new Membre("data/membres/tibia.obj", make_translation(0, -1.53, 0), cuisse_gauche);
-	pied_gauche = new Membre("data/membres/pied.obj", make_translation(0, -1.37, 0), tibia_gauche);
-		
+
     return 0;   // renvoyer 0 ras, pas d'erreur, sinon renvoyer -1
 }
 
 void reset() //retour à la position de départ
 {
-	corps->reset();
-	torse->reset();
-
-	cou->reset(); 
-	tete->reset();
-
-	epaule_droite->reset(); 
-	bras_droit->reset();
-	av_bras_droit->reset();
-	poignet_droit->reset();
-	main_droite->reset();
-
-	epaule_gauche->reset();
-	bras_gauche->reset();
-	av_bras_gauche->reset();
-	poignet_gauche->reset();
-	main_gauche->reset();
-
-	boule_cuisse_droite->reset();
-	cuisse_droite->reset();
-	tibia_droit->reset();
-	pied_droit->reset();
-
-	boule_cuisse_gauche->reset();
-	cuisse_gauche->reset();
-	tibia_gauche->reset();
-	pied_gauche->reset();
-
+	for (int i = 0; i<22; i++)
+	{
+		 membres[i]->reset(); 
+	}
 }
 
 void saut() //position du saut (bras en V, genoux pliés)
 {
 	reset();
 	
-	epaule_droite->move(make_rotationX(-60));
-	epaule_gauche->move(make_rotationX(60));
+	membres[m::epaule_droite]->move(make_rotationX(-60));
+	membres[m::epaule_gauche]->move(make_rotationX(60));
 	
-	tibia_droit->move(make_rotationZ(-105));
-	tibia_gauche->move(make_rotationZ(-105));
+	membres[m::tibia_droit]->move(make_rotationZ(-105));
+	membres[m::tibia_gauche]->move(make_rotationZ(-105));
 }
 
 void guerrier() //position du guerrier (yoga)
 {
 	reset();
 	
-	cou->move(make_rotationY(90));
+	membres[m::cou]->move(make_rotationY(90));
 	
-	boule_cuisse_droite->move(make_rotationY(90));
-	boule_cuisse_droite->move(make_rotationZ(90));
-	tibia_droit->move(make_rotationZ(-90));
+	membres[m::boule_cuisse_droite]->move(make_rotationY(90));
+	membres[m::boule_cuisse_droite]->move(make_rotationZ(90));
+	membres[m::tibia_droit]->move(make_rotationZ(-90));
 		
-	boule_cuisse_gauche->move(make_rotationY(45));
-	boule_cuisse_gauche->move(make_rotationX(-55));
-	boule_cuisse_gauche->move(make_rotationZ(-45));
+	membres[m::boule_cuisse_gauche]->move(make_rotationY(45));
+	membres[m::boule_cuisse_gauche]->move(make_rotationX(-55));
+	membres[m::boule_cuisse_gauche]->move(make_rotationZ(-45));
 	
-	pied_gauche->move(make_rotationX(65));
-	pied_gauche->move(make_rotationZ(20));
-	pied_gauche->move(make_rotationY(-5));	
+	membres[m::pied_gauche]->move(make_rotationX(65));
+	membres[m::pied_gauche]->move(make_rotationZ(20));
+	membres[m::pied_gauche]->move(make_rotationY(-5));	
 	
-	corps->move(make_translation(0,-1.5,0));
+	membres[m::corps]->move(make_translation(0,-1.5,0));
 	
 }
 
@@ -191,17 +163,17 @@ void sur_une_main() // en équilibre sur une main, les jambes en V, l'une est pl
 {
 	reset();
 	
-	epaule_gauche->move(make_rotationX(90));
+	membres[m::epaule_gauche]->move(make_rotationX(90));
 	
-	main_gauche->move(make_rotationX(-90));
+	membres[m::main_gauche]->move(make_rotationX(-90));
 		
-	tibia_droit->move(make_rotationZ(-105));
+	membres[m::tibia_droit]->move(make_rotationZ(-105));
 	
-	boule_cuisse_gauche->move(make_rotationX(-15));
-	boule_cuisse_droite->move(make_rotationX(15));
+	membres[m::boule_cuisse_gauche]->move(make_rotationX(-15));
+	membres[m::boule_cuisse_droite]->move(make_rotationX(15));
 	
-	corps->move(make_rotationX(180));
-	corps->move(make_translation(0,-2,0));
+	membres[m::corps]->move(make_rotationX(180));
+	membres[m::corps]->move(make_translation(0,-2,0));
 }
 
 // affichage
@@ -229,33 +201,11 @@ int draw( )
         orbiter_translation(camera, (float) mx / (float) window_width(), (float) my / (float) window_height()); 
     
     draw(grid,camera);
-    //torse->move(make_rotationY(1));
-    draw(torse->getMaillage(),torse->getTransform(), camera); 
-       
-    draw(cou->getMaillage(),cou->getTransform(), camera);
-    draw(tete->getMaillage(),tete->getTransform(), camera);  
     
-    draw(epaule_droite->getMaillage(),epaule_droite->getTransform(), camera);    
-    draw(bras_droit->getMaillage(),bras_droit->getTransform(), camera);
-    draw(av_bras_droit->getMaillage(),av_bras_droit->getTransform(), camera);  
-    draw(poignet_droit->getMaillage(),poignet_droit->getTransform(), camera);    
-    draw(main_droite->getMaillage(),main_droite->getTransform(), camera);
-    
-    draw(epaule_gauche->getMaillage(),epaule_gauche->getTransform(), camera);    
-    draw(bras_gauche->getMaillage(),bras_gauche->getTransform(), camera);
-    draw(av_bras_gauche->getMaillage(),av_bras_gauche->getTransform(), camera);  
-    draw(poignet_gauche->getMaillage(),poignet_gauche->getTransform(), camera);    
-    draw(main_gauche->getMaillage(),main_gauche->getTransform(), camera);
-    
-    draw(boule_cuisse_droite->getMaillage(),boule_cuisse_droite->getTransform(), camera);  
-    draw(cuisse_droite->getMaillage(),cuisse_droite->getTransform(), camera);    
-    draw(tibia_droit->getMaillage(),tibia_droit->getTransform(), camera);
-    draw(pied_droit->getMaillage(),pied_droit->getTransform(), camera);  
-    
-    draw(boule_cuisse_gauche->getMaillage(),boule_cuisse_gauche->getTransform(), camera);  
-    draw(cuisse_gauche->getMaillage(),cuisse_gauche->getTransform(), camera);    
-    draw(tibia_gauche->getMaillage(),tibia_gauche->getTransform(), camera);
-    draw(pied_gauche->getMaillage(),pied_gauche->getTransform(), camera); 
+	for (int i = 0; i<22; i++)
+	{
+		 draw(membres[i]->getMaillage(),membres[i]->getTransform(), camera); 
+	}
 	
 	if (key_state('p'))
 		saut();
@@ -271,7 +221,10 @@ int draw( )
 		reset();
 	
 	if (key_state('z')) // penche le buste sans faire bouger les jambes
-		torse->move(make_rotationZ(-1));
+		membres[m::torse]->move(make_rotationZ(-0.2));
+		
+	if (key_state('e')) // penche le buste sans faire bouger les jambes
+		membres[m::torse]->move(make_rotationZ(0.2));
 
     return 1;   // on continue, renvoyer 0 pour sortir de l'application
 }

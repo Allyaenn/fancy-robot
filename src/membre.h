@@ -23,34 +23,16 @@ class Membre {
 		Membre * pere;
 
 	public : 
-	
-		Membre();
-		
+
 		Membre(const char* file, Transform t, Membre * m = NULL);
-		
-		//Membre(Transform t, Membre * m = NULL);
-		
-		Membre(const Membre & m);
-		
-		Membre & operator=(const Membre &);
 		
 		Mesh & getMaillage();
 		
 		Transform getTransform();
 		
-		const Membre & getPere();
-	
-		void setMaillage(Mesh & m);
-		
-		void setTransform(Transform & t);
-		
-		void setPere(Membre * p);
-		
 		void move(Transform t);
 		
 		void reset();
-	
-		void afficherTransform();
 		
 		~Membre();
 	

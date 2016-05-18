@@ -1,9 +1,7 @@
 #include "membre.h"
 
-Membre::Membre(){}
-
 /**
- * Constructeur tous arguments
+ * Constructeur
  */
 Membre::Membre(const char* file, Transform t, Membre * p){
 
@@ -16,31 +14,6 @@ Membre::Membre(const char* file, Transform t, Membre * p){
 	else // le torse
 		this->t_courante = make_identity();
 		this->t_offset = t;
-}
-
-/**
- * Constructeur par copie
- * attention à la copie, deux membres identiques on le même père mais pas les mêmes enfants
- */
-Membre::Membre(const Membre & m){
-
-	this->maillage = m.maillage;
-	//this->transform = m.transform;
-	this->pere = m.pere;
-}
-
-
-/**
- * Redéfinition de l'affectation
- */
-Membre & Membre::operator=(const Membre & m){
-	if(this != &m){
-
-		this->maillage = m.maillage;
-		//this->transform = m.transform;
-		this->pere = m.pere;
-	}
-	return *this;
 }
 
 /**
@@ -61,25 +34,6 @@ Transform  Membre::getTransform(){
 		//	   transformation du père	  * tr courante * décalage	
 }
 
-const Membre & Membre::getPere(){
-	return *(this->pere);
-}
-
-/**
- * ****************************
- * Setters
- * ****************************
- */
-void Membre::setMaillage(Mesh & m){
-	this->maillage = m;
-}
-void Membre::setTransform(Transform & t){
-	//this->transform = t;
-}
-void Membre::setPere(Membre* p){
-	this->pere = p;
-}
-
 /**
  * Applique une Transformation t au membre
  */
@@ -89,19 +43,10 @@ void Membre::move(Transform t)
 	//this->transform = this->transform * t;
 }
 
+/*
+ * Remplace le membre à sa position d'origine 
+ */
 void Membre::reset()
 {
 	this->t_courante = make_identity();
-}
-
-/* affiche la matrice de transformation*/
-void Membre::afficherTransform(){
-
-	for(int i = 0; i< 4; i++){
-		for(int j = 0; j < 4; j++){
-			//printf(" %f ", this->transform.m[i][j]);
-		}
-		printf("\n");
-	}
-	printf("\n");
 }
